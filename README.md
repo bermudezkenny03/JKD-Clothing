@@ -10,3 +10,5 @@ Los servicios se comunican entre sí mediante peticiones HTTP usando APIs, lo qu
 La plataforma utiliza una arquitectura distribuida basada en microservicios, lo que permite que el sistema sea más escalable, tenga mayor disponibilidad y pueda seguir funcionando aunque uno de los servicios tenga fallas.
 ## Base de datos
 Se utiliza una base de datos centralizada donde se almacena la información de los usuarios, los productos, los pedidos, los precios y las imágenes. Esta base de datos puede ser relacional, por ejemplo MySQL, conectada al backend en PHP.
+## Usuarios del sitema
+Los usuarios del sistema son los clientes que ingresan a la tienda para consultar productos y realizar compras, y el administrador, que se encarga de gestionar los productos, los pedidos y la información general de la tienda.
