@@ -12,3 +12,5 @@ La plataforma utiliza una arquitectura distribuida basada en microservicios, lo 
 Se utiliza una base de datos centralizada donde se almacena la información de los usuarios, los productos, los pedidos, los precios y las imágenes. Esta base de datos puede ser relacional, por ejemplo MySQL, conectada al backend en PHP.
 ## Usuarios del sitema
 Los usuarios del sistema son los clientes que ingresan a la tienda para consultar productos y realizar compras, y el administrador, que se encarga de gestionar los productos, los pedidos y la información general de la tienda.
+## Riesgos y fallas posibles 
+Entre los principales riesgos se encuentran la caída de alguno de los servicios, problemas de conexión con la base de datos, lentitud cuando hay muchos usuarios conectados al mismo tiempo, errores en la comunicación entre servicios y posibles fallas de seguridad si no se protegen correctamente los accesos y la información.
