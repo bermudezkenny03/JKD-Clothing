@@ -8,3 +8,5 @@ El sistema ofrece servicios como el registro e inicio de sesión de usuarios, la
 Los servicios se comunican entre sí mediante peticiones HTTP usando APIs, lo que permite que cada servicio envíe y reciba información, como datos de productos, usuarios y pedidos, sin depender directamente de los demás.
 ## Tipo de arquitectura
 La plataforma utiliza una arquitectura distribuida basada en microservicios, lo que permite que el sistema sea más escalable, tenga mayor disponibilidad y pueda seguir funcionando aunque uno de los servicios tenga fallas.
+## Base de datos
+Se utiliza una base de datos centralizada donde se almacena la información de los usuarios, los productos, los pedidos, los precios y las imágenes. Esta base de datos puede ser relacional, por ejemplo MySQL, conectada al backend en PHP.
