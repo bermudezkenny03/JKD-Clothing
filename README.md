@@ -6,3 +6,5 @@ JKD Clothing resuelve el problema de vender ropa y calzado de forma rápida, seg
 El sistema ofrece servicios como el registro e inicio de sesión de usuarios, la visualización del catálogo de ropa y calzado, el carrito de compras, la gestión de pedidos y un módulo de administración para crear, editar y eliminar productos, así como actualizar precios e inventario.
 ## Comunicacion entre servicios 
 Los servicios se comunican entre sí mediante peticiones HTTP usando APIs, lo que permite que cada servicio envíe y reciba información, como datos de productos, usuarios y pedidos, sin depender directamente de los demás.
+## Tipo de arquitectura
+La plataforma utiliza una arquitectura distribuida basada en microservicios, lo que permite que el sistema sea más escalable, tenga mayor disponibilidad y pueda seguir funcionando aunque uno de los servicios tenga fallas.
