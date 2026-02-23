@@ -64,13 +64,13 @@ const router = createRouter({
     },
 
     {
-      path: '/roles',
-      name: 'Roles',
+      path: '/settings',
+      name: 'Settings',
       component: () => import('../views/Settings/Settings.vue'),
       meta: {
-        title: 'Roles',
+        title: 'Settings',
         requiresAuth: true,
-        module: 'roles',
+        module: 'settings',
       },
     },
 
