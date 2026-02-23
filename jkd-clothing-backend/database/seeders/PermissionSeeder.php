@@ -133,10 +133,10 @@ class PermissionSeeder extends Seeder
             'parent_id' => $accessManagement->id
         ]);
 
-        $rolesModule = Module::create([
-            'slug' => 'roles',
-            'name' => 'Roles',
-            'route' => '/roles',
+        $settings = Module::create([
+            'slug' => 'settings',
+            'name' => 'Settings',
+            'route' => '/settings',
             'parent_id' => $accessManagement->id
         ]);
 

@@ -87,13 +87,50 @@ class User extends Authenticatable
         return $this->role->hasModule($moduleSlug) ?? false;
     }
 
+    public function isStaff(): bool
+    {
+        if (! $this->status || ! $this->role) {
+            return false;
+        }
+
+        return in_array($this->role->name, [
+            'Super Admin',
+            'Admin',
+        ]);
+    }
+
     public function getModules()
     {
-        return $this->role->getModules() ?? [];
+        $modules = collect($this->role?->getModules() ?? []);
+
+        if ($this->isStaff() && ! $modules->contains('dashboard')) {
+            $modules->prepend('dashboard');
+        }
+
+        return $modules->values()->toArray();
     }
 
     public function getModulesWithInfo()
     {
-        return $this->role->getModulesWithInfo() ?? [];
+        $modules = collect($this->role?->getModulesWithInfo() ?? []);
+        if ($this->isStaff()) {
+
+        $dashboard = Module::where('slug', 'dashboard')
+            ->where('is_active', true)
+            ->first();
+
+        if ($dashboard && ! $modules->contains(fn($m) => $m['slug'] === 'dashboard')) {
+            $modules->prepend([
+                'slug' => $dashboard->slug,
+                'name' => $dashboard->name,
+                'icon' => $dashboard->icon,
+                'route' => $dashboard->route,
+                'sort_order' => 1,
+                'children' => [],
+            ]);
+        }
     }
+
+    return $modules->sortBy('sort_order')->values()->toArray();
+}
 }
