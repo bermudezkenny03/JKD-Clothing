@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Actividad Clase 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+<h1>🌐 Actividad Clase 4</h1>
+<h2>Comunicación entre Servicios + REST + Eventos + Service Discovery</h2>
+
+<p><strong>Equipo:</strong> Juan, Jimmy, Diego, Kenny</p>
+<p><strong>Proyecto:</strong> JKD-Clothing</p>
+
+<div class="section">
+<h2>🪜 1. Interacciones entre Servicios</h2>
+
+<p><strong>Interacción 1</strong></p>
+<label>Servicio que envía:</label>
+<div class="line">Carrito</div>
+<label>Servicio que recibe:</label>
+<div class="line">Gestión de Pedidos</div>
+<label>Información enviada:</label>
+<div class="line">ID del usuario, lista de productos, cantidad, precio total.</div>
+<label>¿Qué sucede si no responde?</label>
+<div class="line">El pedido no se genera y el usuario recibe un mensaje de error. El carrito conserva los productos para reintentar.</div>
+
+<p><strong>Interacción 2</strong></p>
+<label>Servicio que envía:</label>
+<div class="line">Gestión de Pedidos</div>
+<label>Servicio que recibe:</label>
+<div class="line">Catálogo / Inventario</div>
+<label>Información enviada:</label>
+<div class="line">ID del producto, cantidad vendida.</div>
+<label>¿Qué sucede si no responde?</label>
+<div class="line">El inventario no se actualiza y podría venderse sin stock. Se debe reintentar o registrar el error.</div>
+
+<p><strong>Interacción 3</strong></p>
+<label>Servicio que envía:</label>
+<div class="line">Cliente (Frontend)</div>
+<label>Servicio que recibe:</label>
+<div class="line">Servicio de Usuarios (Login/Registro)</div>
+<label>Información enviada:</label>
+<div class="line">Correo electrónico y contraseña.</div>
+<label>¿Qué sucede si no responde?</label>
+<div class="line">El usuario no puede iniciar sesión y se muestra un mensaje de error.</div>
+
+</div>
+
+<div class="section">
+<h2>🪜 2. REST o Eventos</h2>
+
+<table>
+<tr>
+<th>Interacción</th>
+<th>REST</th>
+<th>Evento</th>
+<th>¿Por qué?</th>
+</tr>
+<tr>
+<td>1</td>
+<td>✔</td>
+<td></td>
+<td>El carrito necesita confirmación inmediata para saber si el pedido fue creado.</td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>✔</td>
+<td>La actualización del inventario puede ejecutarse después como evento "Pedido Creado".</td>
+</tr>
+<tr>
+<td>3</td>
+<td>✔</td>
+<td></td>
+<td>El login requiere validación inmediata para permitir acceso.</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>🪜 3. Síncrono o Asíncrono</h2>
+
+<table>
+<tr>
+<th>Interacción</th>
+<th>Síncrono</th>
+<th>Asíncrono</th>
+<th>Justificación</th>
+</tr>
+<tr>
+<td>1</td>
+<td></td>
+<td>✔</td>
+<td>El usuario debe esperar confirmación del pedido.</td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>✔</td>
+<td>La actualización de inventario puede ejecutarse en segundo plano.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>✔</td>
+<td></td>
+<td>El usuario necesita respuesta inmediata para ingresar.</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>🪜 4. Eventos Importantes del Sistema</h2>
+1️⃣ Pedido creado<br><br>
+2️⃣ Usuario registrado<br><br>
+3️⃣ Producto actualizado por el administrador
+</div>
+
+<div class="section">
+<h2>🪜 5. Análisis de Fallos</h2>
+<label>Servicio más crítico:</label>
+<div class="line">Base de Datos</div>
+<label>¿Qué pasaría si falla?</label>
+<div class="line">No se podrían consultar productos, iniciar sesión ni generar pedidos.</div>
+<label>¿El sistema debe detenerse o continuar?</label>
+<div class="line">Puede continuar parcialmente mostrando catálogo en caché, pero no permitir compras.</div>
+<label>¿Cómo podrían manejar este fallo?</label>
+<div class="line">Replicación de base de datos, copias de seguridad, caché y monitoreo automático.</div>
+</div>
+
+<div class="section">
+<h2>🪜 6. Service Discovery</h2>
+<label>¿Qué problema ocurre si cambia la IP de un servicio?</label>
+<div class="line">Los demás servicios no podrían encontrarlo si la IP está configurada manualmente.</div>
+<label>¿Cómo sabría un servicio dónde encontrar otro?</label>
+<div class="line">Consultando un servidor de Service Discovery que registre las direcciones dinámicamente.</div>
+<label>¿Por qué sería útil Service Discovery?</label>
+<div class="line">Permite que los servicios se encuentren automáticamente y facilita la escalabilidad.</div>
+<label>¿Dónde lo aplicarían en su sistema?</label>
+<div class="line">Entre Carrito, Pedidos, Catálogo y Usuarios para evitar depender de IPs fijas.</div>
+</div>
+
+<div class="section">
+<h2>🪜 7. Mini Diagrama</h2>
+<p>Dibujen:</p>
+<p><img src="JDK MINI DIAGRAMA.png" width="900" alt="Mini Diagrama"></p>
+</div>
+
+<div class="note">
+💡 <strong>Ayuda rápida</strong><br>
+REST → petición directa<br>
+Evento → algo ocurrió<br>
+Síncrono → espera respuesta<br>
+Asíncrono → continúa sin esperar<br>
+Service Discovery → permite encontrar servicios automáticamente
+</div>
+
+<div class="footer">
+🎤 El equipo debe poder explicar:<br>
+✔ una interacción importante<br>
+✔ un evento del sistema<br>
+✔ qué pasa si un servicio falla<br>
+✔ dónde usarían Service Discovery
+</div>
+
+</div>
+</body>
+</html>
