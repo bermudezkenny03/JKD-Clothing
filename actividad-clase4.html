@@ -3,74 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Actividad Clase 4</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f6f8;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
-  color: #2c3e50;
-}
-
-h1 {
-  text-align: center;
-}
-
-.section {
-  margin-top: 30px;
-}
-
-label {
-  font-weight: bold;
-}
-
-.line {
-  border-bottom: 1px solid #ccc;
-  margin: 8px 0 16px 0;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background-color: #e9eef3;
-}
-
-.note {
-  background: #eef7ff;
-  padding: 15px;
-  border-left: 4px solid #3498db;
-  margin-top: 20px;
-}
-
-.footer {
-  margin-top: 30px;
-  padding: 15px;
-  background: #f1f1f1;
-  border-radius: 8px;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -85,32 +18,30 @@ th {
 <div class="section">
 <h2>🪜 1. Interacciones entre Servicios</h2>
 
-<p><strong>Interacción 1</strong></p>
+<p><strong>Interacción 1: Consulta de productos</strong></p>
 <label>Servicio que envía:</label>
 <div class="line">
   <p>
-     Cliente → Solicita información o realiza una acción (por ejemplo: pedir un servicio, consultar datos, hacer una compra).
+     Cliente Web→ Solicita ver el catálogo de ropa(buscar,filtrar por talla/categoría y ver detalles).
   </p>
 </div>
 <label>Servicio que recibe:</label>
 <div class="line">
   <p>
-     Servidor / Sistema → Procesa la solicitud y genera una respuesta.
+     API Gateway → Redirige la petición al microservicio Catálogo/Productos y devuelve la respuesta al cliente.
   </p>
 </div>
 <label>Información enviada:</label>
 <div class="line">
   <p>
-     Datos de la solicitud (ejemplo: nombre del usuario, tipo de servicio requerido, ubicación, datos de pago, etc.).
+     Parámetros de consulta: texto de búsqueda, categoría, talla, color, rango de precio, paginación (page/limit).
   </p>
 </div>
 <label>¿Qué sucede si no responde?</label>
 <div class="line">
   <p>
-    (tiempo de espera agotado).
-    El cliente puede reintentar la solicitud.
-    El sistema puede mostrar un mensaje de error.
-    Se afecta la experiencia del usuario.
+     Se agota el tiempo de espera y la web muestra un error (“No se pudo cargar el catálogo”).
+      El usuario puede reintentar. El sistema puede activar un modo “catálogo en mantenimiento” o usar caché (solo lectura).
   </p>
 </div>
 
