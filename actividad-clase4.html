@@ -40,13 +40,13 @@
 <label>¿Qué sucede si no responde?</label>
 <div class="line">
   <p>
-   *No se puede ver la ropa → afecta directamente ventas.
+   -No se puede ver la ropa → afecta directamente ventas.
     </p>
    <p>
-    *La web muestra error y permite reintentar.
+    -La web muestra error y permite reintentar.
   </p>
    <p>
-    *Se puede activar modo “catálogo en mantenimiento”.
+    -Se puede activar modo “catálogo en mantenimiento”.
   </p>
 </div>
 
@@ -54,24 +54,31 @@
 <div class="line">
   <p>
     <label>Servicio que envía:</label>
-    Sistema principal → Envía datos a otro microservicio (por ejemplo, servicio de pagos).
+    Pedidos (al confirmar compra)
   </p>
 
   <p>
     <label>Servicio que recibe:</label>
-    Microservicio de pagos → Valida y procesa la transacción.
+    Inventario
   </p>
 
   <p>
     <label>Información enviada:</label>
-    Monto a pagar, método de pago, identificación del usuario, número de transacción.
+    idProducto, talla, color, cantidad
   </p>
 
   <p>
     <label>¿Qué sucede si no responde?</label>
-      La transacción queda pendiente o se cancela.
-      Se puede activar un mecanismo de reintento.
-      Se notifica al usuario del fallo.
+    <p>
+   - No se confirma la compra
+    </p>
+    <p>
+    - Pedido queda “pendiente por validación” o se bloquea checkout
+    </p>
+    <p>
+    - Reintentos controlados + circuit breaker
+    </p>
+      
   </p>
 
 </div>
@@ -80,24 +87,30 @@
 <div class="line">
   <p>
     <label>Servicio que envía:</label>
-    Microservicio → Envía notificación (correo, mensaje o actualización de estado).
+    Pedidos
   </p>
 
   <p>
     <label>Servicio que recibe:</label>
-    Servicio de notificaciones (email, SMS o app).
+    Pagos
   </p>
 
   <p>
     <label>Información enviada:</label>
-    Estado del servicio, confirmación de pago o alerta.
+    total, referencia pedido, usuario, método de pago
   </p>
 
   <p>
     <label>¿Qué sucede si no responde?</label>
-      El usuario no recibe la notificación.
-      El sistema puede intentar reenviar el mensaje.
-      Se guarda en una cola para reintento posterior (en sistemas distribuidos).
+      <p>
+    - Pedido queda Pendiente de pago
+      </p>
+      <p>
+    - Se reintenta con límite y se informa al usuario
+      </p>
+      <p>
+    - No se descuenta inventario definitivamente hasta confirmación
+      </p>
   </p>
 </div>
 </div>
