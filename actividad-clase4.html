@@ -153,98 +153,178 @@
 </div>
 
 <div class="section">
-<h2>🪜 4. Eventos Importantes del Sistema</h2>
-1️⃣ SolicitudRealizada<br><br>
-2️⃣ PagoConfirmado<br><br>
-3️⃣ ServicioCompletado
+<h2>🪜 3. Síncrono o Asíncrono</h2>
+
+<table>
+<tr>
+<th>Interacción</th>
+<th>Síncrono</th>
+<th>Asíncrono</th>
+<th>¿Por qué?</th>
+</tr>
+<tr>
+<td>1</td>
+<td>✅</td>
+<td></td>
+<td>El usuario espera ver productos al instante</td>
+</tr>
+<tr>
+<td>2</td>
+<td>✅</td>
+<td></td>
+<td>Checkout necesita confirmación de stock</td>
+</tr>
+<tr>
+<td>3</td>
+<td>✅</td>
+<td></td>
+<td>El usuario espera resultado del pago</td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td>✅</td>
+<td>Actualizar pedido/stock sin bloquear el flujo principal</td>
+</tr>
+</table>
 </div>
+
+<div class="section">
+<h2>🪜 4. Eventos Importantes del Sistema</h2>
+
+1️⃣ CarritoConfirmado<br><br>
+
+2️⃣ PagoConfirmado<br><br>
+
+3️⃣ PagoRechazado<br><br>
+
+4️⃣ PedidoCreado<br><br>
+
+5️⃣ StockDescontado
+
+</div>
+
 
 <div class="section">
 <h2>🪜 5. Análisis de Fallos</h2>
+
 <label>Servicio más crítico:</label>
 <div class="line">
   <p>
-    Servicio de Pagos (o Servicio Principal que procesa las solicitudes).
+    ✅ Servicio de Catálogo / Productos (y su relación con Inventario).
   </p>
 </div>
+
 <label>¿Qué pasaría si falla?</label>
 <div class="line">
   <p>
-    No se pueden completar las transacciones.
-    Los usuarios no pueden finalizar el servicio.
-    Se pueden perder solicitudes si no hay respaldo.
+    Los usuarios no pueden ver la ropa, tallas, colores ni precios.<br>
+    Se cae la función principal del negocio (sin catálogo no hay ventas).<br>
+    Carrito y Pedidos no pueden validar información del producto o stock.
   </p>
 </div>
+
 <label>¿El sistema debe detenerse o continuar?</label>
 <div class="line">
   <p>
-    Debe continuar parcialmente.
-    El sistema puede seguir recibiendo solicitudes, pero dejar los pagos en estado “pendiente” hasta que el servicio se recupere.
+    Debe continuar parcialmente.<br>
+    Usuarios puede seguir funcionando.<br>
+    Carrito puede mantener productos agregados.<br>
+    ❌ Checkout (Pedidos/Pagos) debe bloquearse si no se puede validar producto o stock.
   </p>
 </div>
+
 <label>¿Cómo podrían manejar este fallo?</label>
 <div class="line">
   <p>
-    Implementar reintentos automáticos.
-    Usar colas de mensajes (eventos) para no perder información.
-    Aplicar patrón Circuit Breaker.
-    Tener monitoreo y alertas.
+    Mostrar catálogo en caché (modo solo lectura).<br>
+    Activar mensaje: “Catálogo en mantenimiento” sin tumbar toda la web.<br>
+    Implementar timeouts y patrón Circuit Breaker desde API Gateway.<br>
+    Reintentos controlados (backoff).<br>
+    Monitoreo y logs para reiniciar contenedores rápidamente.
   </p>
 </div>
+
 </div>
+
 
 <div class="section">
 <h2>🪜 6. Service Discovery</h2>
-<label>¿Qué problema ocurre si cambia la IP de un servicio?</label>
+
+<label>¿Qué problema ocurre si cambia la IP de un servicio (contenedor)?</label>
 <div class="line">
   <p>
-    Los otros servicios no sabrían dónde encontrarlo y la comunicación fallaría.
+    Los demás servicios no sabrían dónde encontrarlo y fallarían las llamadas.
   </p>
 </div>
-<label>¿Cómo sabría un servicio dónde encontrar otro?</label>
+
+<label>¿Cómo sabe un servicio dónde encontrar a otro?</label>
 <div class="line">
   <p>
-    Consultando a un Service Discovery, que mantiene un registro actualizado de las direcciones disponibles.
+    En Docker: por nombre del servicio dentro de la red (DNS interno).<br>
+    En sistemas grandes: usando Service Discovery (Consul, Eureka o Kubernetes DNS).
   </p>
 </div>
-<label>¿Por qué sería útil Service Discovery?</label>
+
+<label>¿Por qué es útil?</label>
 <div class="line">
   <p>
-    Porque permite que los servicios se encuentren automáticamente sin depender de direcciones IP fijas. Es clave en microservicios y sistemas distribuidos.
+    Evita depender de IPs fijas y permite que los servicios se encuentren dinámicamente.<br>
+    Es clave para escalar y mantener microservicios distribuidos.
   </p>
 </div>
-<label>¿Dónde lo aplicarían en su sistema?</label>
+
+<label>¿Dónde lo aplicarían en JD CLOTHING?</label>
 <div class="line">
   <p>
-    Entre el Servicio Principal y los microservicios (Pagos, Notificaciones, Usuarios), para que puedan encontrarse dinámicamente.
+    API Gateway → Usuarios / Productos / Carrito / Pedidos / Pagos<br>
+    Pedidos → Inventario / Pagos<br>
+    Pagos → publica eventos que consumen Pedidos e Inventario
   </p>
 </div>
+
 </div>
+
 
 <div class="section">
 <h2>🪜 7. Mini Diagrama</h2>
-<p>Dibujen:</p>
-<p><strong>Cliente -> Consulta -> </strong></p>
+<p><img src="image.jpeg" width="900" alt="Mini diagrama"></p>
+<p><strong>Flujo principal:</strong></p>
+
+<p>
+Cliente (Web)<br>
+→ API Gateway<br>
+→ (REST) Productos / Catálogo<br>
+→ (REST) Carrito<br>
+→ (REST) Pedidos<br>
+→ (REST) Pagos<br>
+→ (EVENTO PagoConfirmado / PagoRechazado) → Broker/Cola<br>
+→ Pedidos actualiza estado<br>
+→ Inventario descuenta stock
+</p>
+
 </div>
-<img src="image.jpeg" alt="Mini diagrama" width="900">
+
+
 <div class="note">
-💡 <strong>Ayuda rápida</strong><br>
-REST → petición directa<br>
-Evento → algo ocurrió<br>
+💡 <strong>Conceptos Clave</strong><br>
+REST → petición directa entre servicios<br>
+Evento → algo ocurrió y otros servicios reaccionan<br>
 Síncrono → espera respuesta<br>
 Asíncrono → continúa sin esperar<br>
-Service Discovery → permite encontrar servicios automáticamente
+Service Discovery → permite encontrar servicios automáticamente<br>
+Docker → cada microservicio corre en su propio contenedor
 </div>
 
 
 <div class="footer">
 🎤 El equipo debe poder explicar:<br>
-✔ una interacción importante<br>
-✔ un evento del sistema<br>
-✔ qué pasa si un servicio falla<br>
-✔ dónde usarían Service Discovery
+✔ Una interacción importante (consulta de Productos o checkout completo)<br>
+✔ Un evento del sistema (ej: PagoConfirmado)<br>
+✔ Qué pasa si falla Catálogo → modo caché + bloqueo checkout<br>
+✔ Dónde usarían Service Discovery (comunicación entre contenedores)<br>
+✔ Por qué Docker es clave en este sistema distribuido
 </div>
-
 </div>
 </body>
 </html>
