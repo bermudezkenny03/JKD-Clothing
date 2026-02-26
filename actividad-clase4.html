@@ -126,53 +126,28 @@
 <th>¿Por qué?</th>
 </tr>
 <tr>
-<td>1</td>
+<td>1:Consultar catálogo/productos</td>
 <td>✅</td>
 <td></td>
-<td>Porque el cliente hace una solicitud directa y espera respuesta inmediata (request–response).</td>
+<td>Consultar catálogo/productos</td>
 </tr>
 <tr>
-<td>2</td>
-<td></td>
-<td>✅</td>
-<td>Porque el sistema puede publicar un evento como “PagoRealizado” que otros servicios consumen sin depender directamente.</td>
-</tr>
-<tr>
-<td>3</td>
-<td></td>
-<td>✅</td>
-<td>Porque las notificaciones suelen enviarse cuando ocurre un evento (ej: “ServicioConfirmado”).</td>
-</tr>
-</table>
-</div>
-
-<div class="section">
-<h2>🪜 3. Síncrono o Asíncrono</h2>
-
-<table>
-<tr>
-<th>Interacción</th>
-<th>Síncrono</th>
-<th>Asíncrono</th>
-<th>Justificación</th>
-</tr>
-<tr>
-<td>1</td>
+<td>2:Consultar catálogo/productos</td>
 <td>✅</td>
 <td></td>
-<td>El cliente espera una respuesta inmediata del servidor.</td>
+<td>Necesita respuesta para permitir o rechazar compra</td>
 </tr>
 <tr>
-<td>2</td>
-<td></td>
+<td>3:Procesar pago</td>
 <td>✅</td>
-<td>El sistema puede enviar el evento de pago y continuar sin esperar que el otro servicio termine.</td>
+<td></td>
+<td>Se requiere resultado para actualizar pedido</td>
 </tr>
 <tr>
-<td>3</td>
+<td>4:PagoConfirmado/PagoRechazado</td>
 <td></td>
 <td>✅</td>
-<td>Las notificaciones se envían después de que ocurre un evento, sin bloquear el proceso principal.</td>
+<td>Desacopla servicios y evita dependencia directa</td>
 </tr>
 </table>
 </div>
