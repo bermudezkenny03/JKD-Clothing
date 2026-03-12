@@ -1,0 +1,99 @@
+services:
+  # =========================
+  # USER SERVICE
+  # =========================
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: jd_user_app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./user-service:/var/www/html
+    depends_on:
+      - user-db
+    networks:
+      - jd_network
+
+  user-db:
+    image: mysql:8.0
+    container_name: jd_user_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3308:3306"
+    volumes:
+      - user_data:/var/lib/mysql
+    networks:
+      - jd_network
+
+  # =========================
+  # CATALOG SERVICE
+  # =========================
+  catalog-service:
+    build:
+      context: ./catalog-service
+      dockerfile: Dockerfile
+    container_name: jd_catalog_app
+    ports:
+      - "8001:80"
+    volumes:
+      - ./catalog-service:/var/www/html
+    depends_on:
+      - catalog-db
+    networks:
+      - jd_network
+
+  catalog-db:
+    image: mysql:8.0
+    container_name: jd_catalog_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: catalog_db
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - catalog_data:/var/lib/mysql
+    networks:
+      - jd_network
+
+  # =========================
+  # PHPMYADMIN (GLOBAL)
+  # =========================
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: jd_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOSTS: user-db,catalog-db
+      PMA_USER: laravel
+      PMA_PASSWORD: secret
+    depends_on:
+      - user-db
+      - catalog-db
+    networks:
+      - jd_network
+
+# =========================
+# VOLUMES
+# =========================
+volumes:
+  user_data:
+  catalog_data:
+
+# =========================
+# NETWORK
+# =========================
+networks:
+  jd_network:
+    driver: bridge
