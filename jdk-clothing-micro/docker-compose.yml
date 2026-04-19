@@ -1,5 +1,25 @@
 services:
   # =========================
+  # API GATEWAY
+  # =========================
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: jd_gateway
+    ports:
+      - "8080:80"
+    volumes:
+      - ./gateway:/var/www/html
+    env_file:
+      - ./gateway/.env
+    depends_on:
+      - user-service
+      - catalog-service
+    networks:
+      - jd_network
+
+  # =========================
   # USER SERVICE
   # =========================
   user-service:
@@ -11,6 +31,8 @@ services:
       - "8000:80"
     volumes:
       - ./user-service:/var/www/html
+    env_file:
+      - ./user-service/.env
     depends_on:
       - user-db
     networks:
@@ -44,6 +66,8 @@ services:
       - "8001:80"
     volumes:
       - ./catalog-service:/var/www/html
+    env_file:
+      - ./catalog-service/.env
     depends_on:
       - catalog-db
     networks:
@@ -66,7 +90,7 @@ services:
       - jd_network
 
   # =========================
-  # PHPMYADMIN (GLOBAL)
+  # PHPMYADMIN
   # =========================
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

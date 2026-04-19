@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -31,10 +31,27 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'status' => 'boolean',
+            'status'   => 'boolean',
         ];
     }
 
+    // ---- Requerido por JWT ----
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'email'     => $this->email,
+            'name'      => $this->name,
+            'last_name' => $this->last_name,
+            'role_id'   => $this->role_id,
+        ];
+    }
+
+    // ---- Todo lo demás igual ----
     protected static function booted()
     {
         static::deleting(function ($user) {
@@ -54,22 +71,24 @@ class User extends Authenticatable
 
     public static function createUser($validated)
     {
-        $user = self::create([
-            'name' => $validated['name'],
+        return self::create([
+            'name'      => $validated['name'],
             'last_name' => $validated['last_name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'phone' => $validated['phone'],
-            'status' => $validated['status'],
-            'role_id' => $validated['role_id'],
+            'email'     => $validated['email'],
+            'password'  => $validated['password'],
+            'phone'     => $validated['phone'],
+            'status'    => $validated['status'],
+            'role_id'   => $validated['role_id'],
         ]);
-
-        return $user;
     }
 
     public function updateUser($validated)
     {
-        $this->update(array_filter($validated, fn($key) => in_array($key, $this->getFillable()), ARRAY_FILTER_USE_KEY));
+        $this->update(array_filter(
+            $validated,
+            fn($key) => in_array($key, $this->getFillable()),
+            ARRAY_FILTER_USE_KEY
+        ));
     }
 
     public function scopeWhereNotAssigned($query, $assignedUserIds)
@@ -89,24 +108,18 @@ class User extends Authenticatable
 
     public function isStaff(): bool
     {
-        if (! $this->status || ! $this->role) {
+        if (!$this->status || !$this->role) {
             return false;
         }
-
-        return in_array($this->role->name, [
-            'Super Admin',
-            'Admin',
-        ]);
+        return in_array($this->role->name, ['Super Admin', 'Admin']);
     }
 
     public function getModules()
     {
         $modules = collect($this->role?->getModules() ?? []);
-
-        if ($this->isStaff() && ! $modules->contains('dashboard')) {
+        if ($this->isStaff() && !$modules->contains('dashboard')) {
             $modules->prepend('dashboard');
         }
-
         return $modules->values()->toArray();
     }
 
@@ -114,23 +127,20 @@ class User extends Authenticatable
     {
         $modules = collect($this->role?->getModulesWithInfo() ?? []);
         if ($this->isStaff()) {
-
             $dashboard = Module::where('slug', 'dashboard')
                 ->where('is_active', true)
                 ->first();
-
-            if ($dashboard && ! $modules->contains(fn($m) => $m['slug'] === 'dashboard')) {
+            if ($dashboard && !$modules->contains(fn($m) => $m['slug'] === 'dashboard')) {
                 $modules->prepend([
-                    'slug' => $dashboard->slug,
-                    'name' => $dashboard->name,
-                    'icon' => $dashboard->icon,
-                    'route' => $dashboard->route,
+                    'slug'       => $dashboard->slug,
+                    'name'       => $dashboard->name,
+                    'icon'       => $dashboard->icon,
+                    'route'      => $dashboard->route,
                     'sort_order' => 1,
-                    'children' => [],
+                    'children'   => [],
                 ]);
             }
         }
-
         return $modules->sortBy('sort_order')->values()->toArray();
     }
 }
