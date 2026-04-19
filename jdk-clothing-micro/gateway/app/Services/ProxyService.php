@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Http\Client\ConnectionException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProxyService
@@ -53,7 +54,8 @@ class ProxyService
                     'X-Gateway'    => 'JDK-Gateway/1.0',
                     'X-Service'    => $service,
                 ]);
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+
+        } catch (ConnectionException $e) {
             Log::error('[Gateway] Service unreachable', [
                 'service' => $service,
                 'url'     => $targetUrl,
@@ -64,6 +66,7 @@ class ProxyService
                 'message' => "Service '{$service}' is currently unavailable.",
                 'error'   => 'SERVICE_UNAVAILABLE',
             ], 503);
+
         } catch (\Exception $e) {
             Log::error('[Gateway] Unexpected error', [
                 'error' => $e->getMessage(),
@@ -91,9 +94,12 @@ class ProxyService
         }
 
         if ($user = $request->get('_gateway_user')) {
-            $headers['X-User-Id']    = $user['sub']     ?? '';
-            $headers['X-User-Email'] = $user['email']   ?? '';
-            $headers['X-User-Role']  = $user['role_id'] ?? '';
+            $headers['X-User-Id']      = $user['sub']       ?? '';
+            $headers['X-User-Email']   = $user['email']     ?? '';
+            $headers['X-User-Name']    = $user['name']      ?? '';
+            $headers['X-User-Role']    = $user['role']      ?? '';
+            $headers['X-User-Role-Id'] = $user['role_id']   ?? ''; 
+            $headers['X-User-Status']  = $user['status']    ?? '';
         }
 
         return $headers;
