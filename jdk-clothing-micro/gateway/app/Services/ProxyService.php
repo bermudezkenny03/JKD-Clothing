@@ -5,21 +5,20 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProxyService
 {
-    // Este método se encarga de recibir la solicitud del cliente, construir la URL del servicio destino,
     public function forward(Request $request, string $service, string $path): SymfonyResponse
     {
         $config  = config("gateway.services.{$service}");
         $baseUrl = rtrim($config['url'], '/');
         $prefix  = $config['prefix'];
 
-        $cleanPath = ltrim($path, '/');
-        $targetUrl = "{$baseUrl}/{$prefix}/" . $cleanPath;
-
-        $targetUrl = rtrim($targetUrl, '/');
+        $targetUrl = $path
+            ? "{$baseUrl}/{$prefix}/{$path}"
+            : "{$baseUrl}/{$prefix}";
 
         if ($request->query()) {
             $targetUrl .= '?' . http_build_query($request->query());
@@ -38,18 +37,14 @@ class ProxyService
                 ->connectTimeout($config['connect_timeout'] ?? 3)
                 ->withHeaders($this->buildHeaders($request));
 
-            if ($request->hasFile('image') || $request->hasFile('file')) {
-                $response = $this->forwardWithFiles($http, $request, $targetUrl);
-            } else {
-                $response = $http->{strtolower($request->method())}(
-                    $targetUrl,
-                    $request->all()
-                );
-            }
+            $response = $request->hasFile('image') || $request->hasFile('file')
+                ? $this->forwardWithFiles($http, $request, $targetUrl)
+                : $http->{strtolower($request->method())}($targetUrl, $request->all());
 
             Log::info('[Gateway] Response received', [
                 'status'  => $response->status(),
                 'service' => $service,
+                'to'      => $targetUrl,
             ]);
 
             return response($response->body(), $response->status())
@@ -81,14 +76,13 @@ class ProxyService
         }
     }
 
-    // Este método construye los encabezados que se enviarán al servicio destino, incluyendo información del usuario autenticado.
     private function buildHeaders(Request $request): array
     {
         $headers = [
             'Accept'            => 'application/json',
             'X-Forwarded-For'   => $request->ip(),
             'X-Forwarded-Host'  => $request->getHost(),
-            'X-Request-ID'      => (string) \Illuminate\Support\Str::uuid(),
+            'X-Request-ID'      => (string) Str::uuid(),
             'X-Gateway-Version' => '1.0',
         ];
 
@@ -105,7 +99,6 @@ class ProxyService
         return $headers;
     }
 
-    // Este método se encarga de manejar las solicitudes que incluyen archivos adjuntos, utilizando el método attach de Laravel HTTP Client.
     private function forwardWithFiles($http, Request $request, string $url): SymfonyResponse
     {
         $files = [];

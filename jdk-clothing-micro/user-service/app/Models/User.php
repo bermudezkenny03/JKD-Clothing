@@ -41,13 +41,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    // Agrega aquí los custom claims que quieres que se incluyan en el token
     public function getJWTCustomClaims()
     {
         return [
             'email'     => $this->email,
             'name'      => $this->name,
             'last_name' => $this->last_name,
+            'role'      => $this->role?->name,
             'role_id'   => $this->role_id,
+            'status'    => $this->status,
         ];
     }
 
