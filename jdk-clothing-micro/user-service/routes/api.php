@@ -7,22 +7,21 @@ use App\Http\Controllers\Api\PermissionController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
+    Route::post('/logout',  [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/me',       [AuthController::class, 'me']);
 
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
-
-    // Users
+    // Rutas de usuarios
     Route::prefix('users')->group(function () {
         Route::get('/general-data', [UserController::class, 'getGeneralData']);
     });
-
     Route::apiResource('users', UserController::class);
 
-    // Permissions
+    // Rutas de permisos
     Route::prefix('permissions')->group(function () {
-        Route::post('/general-data', [PermissionController::class, 'index']);
-        Route::get('/roles/{role}', [PermissionController::class, 'getRolePermissions']);
+        Route::post('/general-data',       [PermissionController::class, 'index']);
+        Route::get('/roles/{role}',         [PermissionController::class, 'getRolePermissions']);
         Route::post('/roles/{role}/assign', [PermissionController::class, 'assignPermissions']);
     });
 });
