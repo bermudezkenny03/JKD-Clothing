@@ -237,7 +237,7 @@ docker exec -it jd_catalog_app php artisan cache:clear
 ### 9. Verificar el estado del Gateway
 
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:8080/api/health
 ```
 
 Respuesta esperada:
